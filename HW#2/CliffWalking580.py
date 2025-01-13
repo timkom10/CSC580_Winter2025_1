@@ -15,8 +15,7 @@ image_path = path.join(path.dirname(gym.__file__), "envs", "toy_text")
 
 class CliffWalking(CliffWalkingEnv):
     def __init__(self, render_mode: str = None, is_slippery: bool = False):
-        super().__init__(render_mode = render_mode)
-        self.is_slippery=True
+        super().__init__(render_mode = render_mode, is_slippery = True)
         
     #def __init__(self, *args, **kwargs):
     #    super().__init__(*args, **kwargs)
@@ -169,8 +168,12 @@ policy = generate_random_policy(nA, nS, 17) # third parameter is the random seed
 policy[36] = 0
 print ("*** Policy ***\n{}".format(policy.reshape((4, 12))))
 
+## another policy
+policy2 = np.array([1, 1, 2, 2, 1, 2, 3, 3, 2, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0])
+##
+
 # Do just one run
-result = run(env, policy)
+result = run(env, policy2)
 # Print the total rewards/return
 print (f' ==> Total return: {result}')
 
