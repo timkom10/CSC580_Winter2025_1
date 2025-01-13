@@ -50,6 +50,10 @@ def run(env, pi, printinfo = False):
         # prints info in text if render_mode is 'ansi' or no output if 'human',
         # or graphical output if 'rgb_array' AND if the code is run from command line.
         env.render()
+        
+        if env.render_mode == 'rgb_array':
+            time.sleep(0.1)
+            
     return sum_r
     
     
