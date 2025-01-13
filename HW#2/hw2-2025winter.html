@@ -1,0 +1,252 @@
+﻿<html>
+
+<head>
+<style>
+body { font-family: Calibri;  }
+table { font-family: Calibri; font-size: small; }
+.style2 {
+	list-style-type: lower-roman;
+}
+.style3 {
+	text-decoration: underline;
+}
+.style4 {
+	list-style-type: lower-alpha;
+}
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  .auto-style9 {
+	font-size: larger;
+}
+  .auto-style10 {
+	color: #FF0000;
+	font-size: larger;
+}
+.auto-style11 {
+	color: #000000;
+}
+  .auto-style12 {
+	margin-left: 40px;
+}
+.auto-style13 {
+	list-style-type: circle;
+}
+  .auto-style14 {
+	color: #000000;
+	font-size: larger;
+}
+.auto-style15 {
+	text-decoration: underline;
+	font-size: larger;
+}
+  .auto-style16 {
+	color: #FF0000;
+}
+  </style>
+</head>
+
+<body>
+
+<h3 align="center">CSC 580: Artificial Intelligence II<br>Winter 2025</h3>
+
+<h3>Homework #2: 
+Markov Decision Process -- Cliff Walking using Policy Iteration</h3>
+<p>This assignment is to code and run experiments with the
+<a href="https://gymnasium.farama.org/environments/toy_text/cliff_walking/">
+<strong>
+Cliff Walking</strong></a> 
+implemented in <a href="https://gymnasium.farama.org/">Gymnasium</a>.&nbsp; </p>
+<p>The assignment consists of two parts: (1) 
+run several fixed policies; and&nbsp; (2) learn an optimal policy using <strong>
+Policy 
+Iteration</strong> method and run the policy.</p>
+<hr>
+<h3>Cliff Walking Environment</h3>
+<p>The Cliff Walking environment is one of the classic Reinforcement Learning 
+problems.&nbsp; It is implemented in The enironment is a terrain with a cliff 
+that drops off into the water.&nbsp; The goal of the agent is to navigate in the 
+environment and walk from the start on one side of the cliff to the goal on the 
+other side of the cliff witout avoiding falling off the cliff.</p>
+<p>The environment is organized in a 4 x 12&nbsp; grid world.&nbsp; The start 
+state is <strong>36</strong> (left-bottom corner, position (3, 0)), and the goal 
+state is <strong>47</strong> (right-bottom corner, position (3,11)) -- based on 
+0-based indices.&nbsp; Cells in the bottom row, except for the start and goal 
+states, are cliff.&nbsp; </p>
+<p>The environment is stochastic -- the ground is supposed to be very slippery.&nbsp; 
+When the agent attempts to move to one direction (UP, RIGHT, DOWN, LEFT), it 
+will only be sucessful 33% (= 1/3) of the time -- the agent may be put to the 
+cell perpendicular to the intended direction for other times (33% (= 1/3) * 2 = 
+66% (=2/3)).</p>
+<p>For this assignment, we will use the environment implemented in
+<a href="https://gymnasium.farama.org/environments/toy_text/cliff_walking/"><strong>
+Gymnasium</strong></a> and write code for the Policy Iteration algorithm to 
+derive an optimal policy.</p>
+<p><img height="240" src="cliff_walking.gif" width="720"></p>
+<p>For more information on the environment, look at the
+<a href="https://gymnasium.farama.org/environments/toy_text/cliff_walking/"><strong>
+Gymnasium Documentation page</strong></a> and
+<a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">their Github</a>.</p>
+<hr>
+<p><strong><span class="auto-style9">Part 1</span></strong><span class="auto-style9">.&nbsp; 
+Fixed Policies</span></p>
+<p>You start by reading and understanding the start-up code <strong>
+<a href="hw2files/580-hw2-examplecode.ipynb">"580-hw2-startup.ipynb"</a></strong> (and its <strong>
+<a href="hw2files/580-hw2-examplecode.html">html version</a></strong>).&nbsp; 
+Also run all cells to ensure the code is compatible with your platform.</p>
+<p>Modify the function '<strong>run()</strong>' so that it computes and returns 
+the following three values:</p>
+<ul>
+	<li><em>steps</em> (the number of steps that took, including near-falls, to 
+	reach the Goal state)</li>
+	<li><em>near-falls</em>&nbsp; (the number of steps that (almost) fell off 
+	the cliff)</li>
+	<li><em>total_rewards</em> (accumulated over the steps)</li>
+</ul>
+<p>Note the function is passed with a pre-made policy.&nbsp; It is a fixed 
+policy where actions were pre-assigned randomly.&nbsp; The policy assigns with exactly one action 
+(up, rigtht, down, left).&nbsp; But the 
+specified action may or may not take place because of the hill is slippery, thus 
+making a
+<strong>stochastic</strong> environment (explained in the
+<a href="https://gymnasium.farama.org/environments/toy_text/frozen_lake/"><strong>
+Gymnasium environment page</strong></a>).</p>
+<p>In the code, the function is called once with the policy generated 
+based on the random seed=17.</p>
+<p>(*) Your task for this part is to try a few other policies and compare 
+their performances.</p>
+<ul class="auto-style13">
+	<li>Try <strong>3 other fixed policies</strong>, using different random seeds 
+	(except for 17).&nbsp;
+	For each policy,
+	<ul>
+		<li>Run the experiment 100 times (i.e., 100 runs) and store the results.</li>
+		<li>Compute the mean and stdev (over 100 runs) and report them.</li>
+	</ul>
+	</li>
+	<li>Select the BEST policy based on the total renumber of steps.&nbsp; Then,</li>
+	<li class="auto-style12">Display the policy in a 2D array.</li>
+	<li class="auto-style12">Generate a histogram that shows the number of 
+	steps, the ratio of near-falls and the rewards.&nbsp;&nbsp;
+	<br>Below is the example histogram 
+		generated for the first policy (seed=17).<br>
+	<table>
+		<tr>
+			<td valign="top">
+			<pre>*** Policy ***
+[[2 3 0 0 1 2 3 1 0 0 1 1]
+ [3 1 2 2 0 2 0 0 2 1 1 2]
+ [0 0 2 3 2 3 1 0 2 2 2 2]
+ [1 0 2 0 1 0 2 1 1 2 0 1]] </pre>
+
+<pre> Mean steps: 3217.05
+Stdev steps: 2887.958055010495
+Mean near_falls: 181.13
+Stdev near_falls: 164.12474859082042
+Mean reward: -21148.92
+Stdev reward: 19122.36536555036 </pre>
+			</td>
+			<td><img height="435" src="hist17.png" width="543"></td>
+		</tr>
+	</table>
+	</li>
+</ul>
+<p><span class="auto-style9">&nbsp;</span><span class="style3"><strong>IMPORTANT</strong></span>: 
+Show results and write answers to the questions shown below in the write-up as 
+well.</p>
+<hr>
+<p><strong><span class="auto-style9">Part 2</span></strong><span class="auto-style9">.&nbsp; 
+Optimal Policy by Policy Iteration</span></p>
+<p>Now we try to find the optimal policy.&nbsp; To that end, you implement the
+<strong>Policy Iteration</strong> algorithm (Sutton &amp; Barto, 2ed, ch 4.3, p. 80).&nbsp;&nbsp; 
+The iteration should terminate when the policy becomes stable (which is the 
+approximation of the optimal policy).</p>
+<p>(*) Your task for this part is to implement the algorithm by yourself and 
+derive the optimal policy.&nbsp; All implementation details are up to you!</p>
+<p>Use gamma (discount rate) = 0.8, and theta = 1e-6.</p>
+<p><strong>Important <span class="auto-style16">REQUIREMENTS</span>: </strong></p>
+<ul>
+	<li>In the initialization step, initialize all V(s) with <strong>arbitrarily 
+	small non-zero numbers</strong>, except that V(terminal) = 0.&nbsp; This is 
+	to avoid breaking ties (especially for determining policy).</li>
+	<li>During the Policy Evaluation loop, use&nbsp;<span class="auto-style11"><strong>TWO 
+	value tables</strong></span> (to do 'asynchronous update', to avoid changing 
+	values after being queried)
+	<ul>
+		<li>one for the&nbsp;current V values, and </li>
+		<li>another for the new V values obtained (by the line "V(s) &lt;-&nbsp; 
+		Sigma<sub>s',r</sub> p(...)") </li>
+		<li>Then at the end of the one loop iteration, you should&nbsp;COPY the 
+		values of the new table into the current table. </li>
+	</ul>
+	</li>
+</ul>
+<p>Be sure to add a <strong>good amount of comments in the code</strong>.</p>
+<p><span class="style3">REMEMBER</span>: The environment dynamics of this 
+environment 
+is <strong>known already</strong> and coded in the
+<a href="https://github.com/Farama-Foundation/Gymnasium/blob/main/gymnasium/envs/toy_text/cliffwalking.py">
+<strong>source code of the environment</strong></a>.&nbsp; In particular, the python dictionary 
+'<strong>self.P</strong>' in the class 'CliffWalkingEnv' contains pretty much all the 
+environment dynamics 
+information.</p>
+<p>After you derived the optimal policy, </p>
+<ul class="auto-style13">
+	<li>Display the policy in a 2D array.</li>
+	<li>Display the converged V(s) table in a 2D array.</li>
+	<li>Generate a histogram with statistics in the title, as you did in Part 1.</li>
+	<li class="auto-style9"><span class="style3"><strong>IMPORTANT</strong></span>: 
+	Show results and write answers to the questions shown below in the write-up.</li>
+</ul>
+<hr>
+<hr>
+	<h3><strong>Deliverables</strong></h3>
+	<p>Submit the following:</p>
+	<ol>
+		<li>Your source code (Jupyter notebook) and its html or pdf version.</li>
+		<li>A write-up document.
+	<ul>
+			<li><strong>Minimum 2.0 pages</strong> (in pdf of docx).</li>
+			<li class="auto-style9">Results of Part 1 -- the top policy and its performance chart (as described above; copy/paste from the 
+			code), plus your summary comments.</li>
+			<li><span class="auto-style9">Results of Part 2 -- the derived optimal policy, the V table and 
+			the chart (as described above; copy/paste from the code), plus your 
+			comments that address </span> <strong><span class="auto-style11"> 
+			<em><span class="auto-style9">"Do the actions in the optimal policy 
+			</span> </em>
+			<span class="auto-style15"><em>make sense</em></span><em><span class="auto-style9"> to you???"&nbsp;
+			</span>
+			</em></span></strong><em><span class="auto-style14">Why and why not?&nbsp;
+			</span><span class="auto-style10"><strong>Explain in detail.</strong></span></em></li>
+
+			
+</ul>
+		<ul>
+			<li>Your general reflections:<ul>
+				<li>What you learned from this exercise.</li>
+				<li>How difficult you felt this 
+			exercise was.</li>
+				<li>Any particular difficulties you encountered.</li>
+				<li>How you 
+		would do/approach differently next time (if there was one).</li>
+				<li>and anything else. </li>
+			</ul>
+		</ul>
+</ol>
+	<p class="auto-style9"><span class="style3"><strong>IMPORTANT Reminder</strong></span>:&nbsp; Every code or 
+	documentation file must have <strong>your name</strong>, the <strong>course name</strong> (CSC 580) and the 
+		<strong>assignment number</strong> (HW#2) at the top of the file.&nbsp; </p>
+
+<hr>
+<h3>Submissions</h3>
+<p>In the submission box 'HW#2'.&nbsp; Do NOT zip the files -- Upload all files 
+separately.</p>
+
+</body>
+
+</html>
