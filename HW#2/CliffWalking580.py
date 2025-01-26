@@ -152,7 +152,7 @@ def run(env, pi, printinfo = False):
     
 # Create a Cliff Walk environment using Gymnasium
 #env = gym.make("CliffWalking-v0", render_mode="rgb_array")#is_slippery=True, 'ansi')#
-env = CliffWalking(render_mode="human")#rgb_array", is_slippery=True)
+env = CliffWalking(render_mode="human") #rgb_array", is_slippery=True)
 
 # Reset the environment and display it
 env.reset()
